@@ -58,6 +58,10 @@ export const SKILL_ICON = {
   Fishing: '🎣',
 };
 
+export const PVP_TYPES = ['Open', 'Optional', 'Hardcore', 'Retro Open', 'Retro Hardcore'];
+
+export const LOCATIONS = ['North America', 'South America', 'Europe', 'Oceania'];
+
 export const PVP_ICON = {
   Open: '🟢',
   Optional: '🟡',

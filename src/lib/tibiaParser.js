@@ -364,10 +364,17 @@ export function parseAuctionDetailHtml(html) {
   const blessingsRaw = singleStat('Blessings'); // e.g. "7/7"
   const blessingsMatch = blessingsRaw ? blessingsRaw.match(/(\d+)\/(\d+)/) : null;
 
+  // NOTE: tibia.com caps this list server-side (~17 entries) for characters
+  // with many completed quest lines, with a "(N more entries)" + "[show
+  // all]" JS expander (`ShowOrHide(...)`) that isn't present in the static
+  // HTML we fetch — there's no plain URL param to request the full list.
+  // hasSoulWar/hasPrimalOrdeal can therefore be a false negative for
+  // characters whose full quest line list is truncated and happens not to
+  // include these within the visible cap.
   const questLinesBlock = findDetailsBlock($, 'Completed Quest Lines');
   const completedQuestLines = parseLeafRows($, questLinesBlock, { maxCols: 1 })
     .map((r) => r[0])
-    .filter((name) => name && name !== 'Quest Line Name');
+    .filter((name) => name && name !== 'Quest Line Name' && !/^\(\d+ more entries\)$/i.test(name) && name !== '[show all]');
 
   const hasSoulWar = completedQuestLines.some((q) => /soul war/i.test(q));
   const hasPrimalOrdeal = completedQuestLines.some((q) => /primal ordeal/i.test(q));

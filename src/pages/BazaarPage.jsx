@@ -4,6 +4,7 @@ import { db } from '../lib/firebase';
 import { DEFAULT_FILTERS, filterAuctions } from '../lib/filters';
 import FilterPanel from '../components/FilterPanel';
 import AuctionCard from '../components/AuctionCard';
+import AuctionListRow from '../components/AuctionListRow';
 
 const PAGE_SIZE = 60;
 
@@ -12,6 +13,7 @@ export default function BazaarPage() {
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
   const [sortBy, setSortBy] = useState('endDate');
+  const [view, setView] = useState('grid');
 
   useEffect(() => {
     const q = query(collection(db, 'auctions'), orderBy('auctionEndIso'), fbLimit(1000));
@@ -46,11 +48,31 @@ export default function BazaarPage() {
       <main className="bazaar-results">
         <div className="results-header">
           <h1>Bazar de Personagens</h1>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-            <option value="endDate">Ordenar: fim do leilão</option>
-            <option value="bid">Ordenar: bid</option>
-            <option value="level">Ordenar: level</option>
-          </select>
+          <div className="results-header-actions">
+            <div className="view-toggle">
+              <button
+                type="button"
+                className={view === 'grid' ? 'active' : ''}
+                onClick={() => setView('grid')}
+                aria-label="Visualização em grade"
+              >
+                ▦
+              </button>
+              <button
+                type="button"
+                className={view === 'list' ? 'active' : ''}
+                onClick={() => setView('list')}
+                aria-label="Visualização em lista"
+              >
+                ☰
+              </button>
+            </div>
+            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <option value="endDate">Ordenar: fim do leilão</option>
+              <option value="bid">Ordenar: bid</option>
+              <option value="level">Ordenar: level</option>
+            </select>
+          </div>
         </div>
 
         {loading && <p>Carregando leilões...</p>}
@@ -58,11 +80,19 @@ export default function BazaarPage() {
           <p>Nenhum leilão encontrado com esses filtros ainda. O scraper roda periodicamente — tente novamente em alguns minutos.</p>
         )}
 
-        <div className="auction-grid">
-          {filtered.map((auction) => (
-            <AuctionCard key={auction.auctionId} auction={auction} />
-          ))}
-        </div>
+        {view === 'grid' ? (
+          <div className="auction-grid">
+            {filtered.map((auction) => (
+              <AuctionCard key={auction.auctionId} auction={auction} />
+            ))}
+          </div>
+        ) : (
+          <div className="auction-list">
+            {filtered.map((auction) => (
+              <AuctionListRow key={auction.auctionId} auction={auction} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,11 +1,13 @@
 import { VOCATION_FAMILIES } from './constants.js';
+import { getWorldMeta } from './worlds.js';
 
 export const DEFAULT_FILTERS = {
   levelMin: null,
   levelMax: null,
   vocations: [], // family labels, e.g. ['Knight'] — matches Knight + Elite Knight
   worlds: [],
-  pvpTypes: [], // matched against world metadata if available; otherwise ignored
+  pvpTypes: [], // e.g. ['Open', 'Optional'] — matched via the auction's world metadata
+  locations: [], // e.g. ['Europe'] — matched via the auction's world metadata
   bidMax: null,
   skillMins: {}, // { 'Axe Fighting': 100 }
   skillMinsMode: 'all', // 'all' = every skill listed must meet its min (AND); 'any' = at least one does (OR)
@@ -41,6 +43,12 @@ export function matchesFilters(auction, filters, { now = Date.now() } = {}) {
     if (!allowedVocations.includes(auction.vocation)) return false;
   }
   if (f.worlds.length > 0 && !f.worlds.includes(auction.world)) return false;
+
+  if (f.pvpTypes.length > 0 || f.locations.length > 0) {
+    const { pvpType, location } = getWorldMeta(auction.world);
+    if (f.pvpTypes.length > 0 && !f.pvpTypes.includes(pvpType)) return false;
+    if (f.locations.length > 0 && !f.locations.includes(location)) return false;
+  }
 
   const activeSkillMins = Object.entries(f.skillMins).filter(([, min]) => min != null);
   if (activeSkillMins.length > 0) {

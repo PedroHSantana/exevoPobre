@@ -47,6 +47,32 @@ export const VOCATION_ICON = {
   'Exalted Monk': '👊',
 };
 
+export const SKILL_ICON = {
+  'Magic Level': '🔮',
+  'Axe Fighting': '🪓',
+  'Club Fighting': '🔨',
+  'Sword Fighting': '⚔️',
+  'Distance Fighting': '🏹',
+  'Fist Fighting': '👊',
+  Shielding: '🛡️',
+  Fishing: '🎣',
+};
+
+export const PVP_ICON = {
+  Open: '🟢',
+  Optional: '🟡',
+  Hardcore: '🔴',
+  'Retro Open': '🕰️',
+  'Retro Hardcore': '🕰️',
+};
+
+export const LOCATION_ICON = {
+  'North America': '🌎',
+  'South America': '🌎',
+  Europe: '🌍',
+  Oceania: '🌏',
+};
+
 export const WORLDS = [
   'Aethera', 'Antica', 'Astera', 'Belobra', 'Blumera', 'Bona', 'Bravoria', 'Calmera',
   'Cantabra', 'Celebra', 'Celesta', 'Citra', 'Collabra', 'Descubra', 'Dia', 'Dracobra',

@@ -1,0 +1,386 @@
+{
+  "Aethera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Antica": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Astera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Belobra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Blumera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Bona": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Bravoria": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Calmera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Cantabra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Celebra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Celesta": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Citra": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Collabra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Descubra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Dia": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Dracobra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Eclipta": {
+    "location": "Europe",
+    "pvpType": "Retro Open"
+  },
+  "Epoca": {
+    "location": "Europe",
+    "pvpType": "Retro Open"
+  },
+  "Escura": {
+    "location": "Europe",
+    "pvpType": "Retro Open"
+  },
+  "Etebra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Ferobra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Firmera": {
+    "location": "North America",
+    "pvpType": "Retro Open"
+  },
+  "Floribra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Gentebra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Gladera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Gladibra": {
+    "location": "South America",
+    "pvpType": "Retro Open"
+  },
+  "Harmonia": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Havera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Honbra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Hostera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Idyllia": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Ignibra": {
+    "location": "South America",
+    "pvpType": "Retro Open"
+  },
+  "Ignitera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Inabra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Issobra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Jadebra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Jinxibra": {
+    "location": "South America",
+    "pvpType": "Retro Open"
+  },
+  "Junera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Kalanta": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Kalibra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Kalimera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Kanda": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Karmeya": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Lobera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Luminera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Lutabra": {
+    "location": "South America",
+    "pvpType": "Retro Open"
+  },
+  "Luzibra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Maligna": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Menera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Monstera": {
+    "location": "North America",
+    "pvpType": "Retro Hardcore"
+  },
+  "Monza": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Mystera": {
+    "location": "North America",
+    "pvpType": "Retro Open"
+  },
+  "Nefera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Nevia": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Noctalia": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Oceanis": {
+    "location": "Oceania",
+    "pvpType": "Optional"
+  },
+  "Ombra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Opulera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Ourobra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Pacera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Peloria": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Penumbra": {
+    "location": "South America",
+    "pvpType": "Retro Open"
+  },
+  "Premia": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Quelibra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Quidera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Quintera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Rasteibra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Refugia": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Retalia": {
+    "location": "Europe",
+    "pvpType": "Retro Hardcore"
+  },
+  "Secura": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Serdebra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Sinistra": {
+    "location": "Europe",
+    "pvpType": "Retro Open"
+  },
+  "Solidera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Sombra": {
+    "location": "South America",
+    "pvpType": "Retro Open"
+  },
+  "Sonira": {
+    "location": "Europe",
+    "pvpType": "Optional"
+  },
+  "Stralis": {
+    "location": "Oceania",
+    "pvpType": "Optional"
+  },
+  "Talera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Tempestera": {
+    "location": "North America",
+    "pvpType": "Retro Open"
+  },
+  "Terribra": {
+    "location": "South America",
+    "pvpType": "Retro Hardcore"
+  },
+  "Thyria": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Tornabra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Unebra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Ustebra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Venebra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Victoris": {
+    "location": "Oceania",
+    "pvpType": "Open"
+  },
+  "Vunira": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Wickera": {
+    "location": "North America",
+    "pvpType": "Retro Open"
+  },
+  "Wintera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Xybra": {
+    "location": "South America",
+    "pvpType": "Open"
+  },
+  "Xyla": {
+    "location": "Europe",
+    "pvpType": "Open"
+  },
+  "Xymera": {
+    "location": "North America",
+    "pvpType": "Open"
+  },
+  "Yonabra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Yovera": {
+    "location": "North America",
+    "pvpType": "Optional"
+  },
+  "Yubra": {
+    "location": "South America",
+    "pvpType": "Optional"
+  },
+  "Zuna": {
+    "location": "Europe",
+    "pvpType": "Hardcore"
+  },
+  "Zunera": {
+    "location": "North America",
+    "pvpType": "Hardcore"
+  }
+}

@@ -107,6 +107,11 @@ function parseEntry(rawEntry) {
     return { type: 'goldTotal', value: parseNumber(goldMatch[1]), raw: text };
   }
 
+  const animusMatch = text.match(/^Animus Masteries unlocked:\s*([\d.,]+)/i);
+  if (animusMatch) {
+    return { type: 'animusMasteries', value: parseNumber(animusMatch[1]), raw: text };
+  }
+
   const additionalSlotsMatch = text.match(/^Additional Slots:\s*(.+)/i);
   if (additionalSlotsMatch) {
     return {
@@ -218,9 +223,19 @@ function parseAuctionCard($, el) {
   let huntingTaskPoints = null;
   let storeOutfits = null;
   let storeMounts = null;
+  let animusMasteries = null;
+  let hasWeeklyTaskSlot = false;
+  let hasPreySlot = false;
 
   for (const entry of parsedEntries) {
     switch (entry.type) {
+      case 'animusMasteries':
+        animusMasteries = entry.value;
+        break;
+      case 'additionalSlots':
+        if (entry.value.some((v) => /weekly task/i.test(v))) hasWeeklyTaskSlot = true;
+        if (entry.value.some((v) => /prey/i.test(v))) hasPreySlot = true;
+        break;
       case 'skill':
         skills[entry.skill] = entry.value;
         break;
@@ -279,6 +294,9 @@ function parseAuctionCard($, el) {
     huntingTaskPoints,
     storeOutfits,
     storeMounts,
+    animusMasteries,
+    hasWeeklyTaskSlot,
+    hasPreySlot,
     entries: parsedEntries,
     officialUrl: `https://www.tibia.com/charactertrade/?subtopic=currentcharactertrades&page=details&auctionid=${auctionId}`,
   };
@@ -354,6 +372,16 @@ export function parseAuctionDetailHtml(html) {
   const hasSoulWar = completedQuestLines.some((q) => /soul war/i.test(q));
   const hasPrimalOrdeal = completedQuestLines.some((q) => /primal ordeal/i.test(q));
 
+  const charmExpansion = /yes/i.test(singleStat('Charm Expansion') ?? '');
+  const weeklyTaskExpansion = /yes/i.test(singleStat('Permanent Weekly Task Expansion') ?? '');
+  const preySlotsCount = parseNumber(singleStat('Permanent Prey Slots')) ?? 0;
+
+  const gemsBlock = findDetailsBlock($, 'Revealed Gems');
+  const gemRows = parseLeafRows($, gemsBlock, { maxCols: 4 }).filter(
+    (r) => r[0] !== 'Gem' && r.some(Boolean)
+  );
+  const gemsCount = gemRows.length;
+
   return {
     fullSkills,
     mountsCount,
@@ -364,6 +392,10 @@ export function parseAuctionDetailHtml(html) {
     completedQuestLines,
     hasSoulWar,
     hasPrimalOrdeal,
+    charmExpansion,
+    weeklyTaskExpansion,
+    preySlotsCount,
+    gemsCount,
   };
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { collection, onSnapshot, orderBy, query, limit as fbLimit } from 'firebase/firestore';
+import { collection, onSnapshot, orderBy, query, where, limit as fbLimit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { DEFAULT_FILTERS, filterAuctions } from '../lib/filters';
 import FilterPanel from '../components/FilterPanel';
@@ -16,7 +16,12 @@ export default function BazaarPage() {
   const [view, setView] = useState('grid');
 
   useEffect(() => {
-    const q = query(collection(db, 'auctions'), orderBy('auctionEndIso'), fbLimit(1000));
+    const q = query(
+      collection(db, 'auctions'),
+      where('auctionEndIso', '>', new Date().toISOString()),
+      orderBy('auctionEndIso'),
+      fbLimit(1000)
+    );
     const unsubscribe = onSnapshot(
       q,
       (snap) => {

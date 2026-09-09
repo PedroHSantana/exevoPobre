@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AuctionCountdown from './AuctionCountdown';
 import AuctionDetailModal from './AuctionDetailModal';
+import OutfitAvatar from './OutfitAvatar';
 import { VOCATION_ICON, PVP_ICON, LOCATION_ICON } from '../lib/constants';
 import { getWorldMeta } from '../lib/worlds';
 
@@ -17,7 +18,7 @@ export default function AuctionListRow({ auction }) {
     <>
       <div className="auction-row" onClick={() => setShowModal(true)} role="button" tabIndex={0}>
         <div className="auction-row-outfit">
-          {auction.outfitImageUrl && <img src={auction.outfitImageUrl} alt={auction.name} />}
+          <OutfitAvatar src={auction.outfitImageUrl} name={auction.name} vocation={auction.vocation} />
         </div>
         <div className="auction-row-name">
           <strong className="ellipsis">{auction.name}</strong>

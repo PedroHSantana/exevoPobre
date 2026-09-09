@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import AuctionCountdown from './AuctionCountdown';
 import AuctionDetailModal from './AuctionDetailModal';
+import OutfitAvatar from './OutfitAvatar';
 import { SKILLS, SKILL_ICON, VOCATION_ICON, PVP_ICON, LOCATION_ICON } from '../lib/constants';
 import { getWorldMeta } from '../lib/worlds';
 import { computeBadges } from '../lib/badges';
@@ -30,11 +31,9 @@ export default function AuctionCard({ auction }) {
     <>
       <article className="auction-card" onClick={() => setShowModal(true)} role="button" tabIndex={0}>
         <header className="auction-card-header">
-          {auction.outfitImageUrl && (
-            <div className="auction-outfit-frame">
-              <img src={auction.outfitImageUrl} alt={auction.name} />
-            </div>
-          )}
+          <div className="auction-outfit-frame">
+            <OutfitAvatar src={auction.outfitImageUrl} name={auction.name} vocation={auction.vocation} />
+          </div>
           <div className="auction-header-info">
             <h3>
               {auction.name}

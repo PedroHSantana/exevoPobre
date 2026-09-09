@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import OutfitAvatar from './OutfitAvatar';
 import { VOCATION_ICON, SKILL_ICON, PVP_ICON, LOCATION_ICON } from '../lib/constants';
 import { getWorldMeta } from '../lib/worlds';
 import { computeBadges } from '../lib/badges';
@@ -33,11 +34,9 @@ export default function AuctionDetailModal({ auction, onClose }) {
         </button>
 
         <header className="modal-header">
-          {auction.outfitImageUrl && (
-            <div className="modal-outfit-frame">
-              <img src={auction.outfitImageUrl} alt={auction.name} />
-            </div>
-          )}
+          <div className="modal-outfit-frame">
+            <OutfitAvatar src={auction.outfitImageUrl} name={auction.name} vocation={auction.vocation} />
+          </div>
           <div>
             <h2>{auction.name}</h2>
             <p className="auction-meta">

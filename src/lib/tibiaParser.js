@@ -138,6 +138,25 @@ function parseEntry(rawEntry) {
   return { type: 'other', raw: text };
 }
 
+const MONTHS = {
+  Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+  Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+};
+
+// Tibia.com timestamps look like "Sep 08 2026, 22:15 CEST" (Central European
+// time, CEST=UTC+2 / CET=UTC+1). Converts to an ISO string so the frontend
+// can compute an accurate countdown instead of parsing free text.
+function parseTibiaDateToIso(text) {
+  const match = text.match(/^(\w{3})\s+(\d{1,2})\s+(\d{4}),\s+(\d{1,2}):(\d{2})\s+(CEST|CET)$/);
+  if (!match) return null;
+  const [, monStr, day, year, hour, minute, tz] = match;
+  const month = MONTHS[monStr];
+  if (month == null) return null;
+  const offsetHours = tz === 'CEST' ? 2 : 1;
+  const utcMs = Date.UTC(Number(year), month, Number(day), Number(hour) - offsetHours, Number(minute));
+  return new Date(utcMs).toISOString();
+}
+
 function parseAuctionCard($, el) {
   const $auction = $(el);
 
@@ -246,6 +265,8 @@ function parseAuctionCard($, el) {
     isNew,
     auctionStart: startDate || null,
     auctionEnd: endDate || null,
+    auctionStartIso: startDate ? parseTibiaDateToIso(startDate) : null,
+    auctionEndIso: endDate ? parseTibiaDateToIso(endDate) : null,
     bid: bidValue,
     bidType,
     skills,

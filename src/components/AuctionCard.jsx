@@ -1,3 +1,5 @@
+import AuctionCountdown from './AuctionCountdown';
+
 function formatNumber(n) {
   if (n == null) return '—';
   return n.toLocaleString('pt-BR');
@@ -15,6 +17,7 @@ export default function AuctionCard({ auction }) {
           <p className="auction-meta">
             Level {formatNumber(auction.level)} · {auction.vocation} · {auction.world}
           </p>
+          <AuctionCountdown endIso={auction.auctionEndIso} />
         </div>
       </header>
 

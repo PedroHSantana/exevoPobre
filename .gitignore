@@ -26,3 +26,6 @@ dist-ssr
 *.sln
 *.sw?
 scripts/last-scrape-output.json
+
+.vercel
+.env*

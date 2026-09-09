@@ -1,7 +1,15 @@
 import { parseAuctionListHtml } from './tibiaParser.js';
 
 const BASE_URL = 'https://www.tibia.com/charactertrade/';
-const USER_AGENT = 'TibiaBazaarFinder/1.0 (+https://github.com/; contact via project owner)';
+// tibia.com's WAF returns 403 to non-browser-looking requests (a custom
+// User-Agent alone was enough to get blocked from Vercel's IP ranges).
+// Mimic a normal desktop Chrome request instead.
+const REQUEST_HEADERS = {
+  'User-Agent':
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+  Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9,pt-BR;q=0.8,pt;q=0.7',
+};
 
 export const ORDER_COLUMN = {
   BID: 100,
@@ -26,8 +34,17 @@ export async function fetchAuctionPage({
   url.searchParams.set('order_direction', String(orderDirection));
 
   const response = await fetch(url.toString(), {
-    headers: { 'User-Agent': USER_AGENT },
+    headers: REQUEST_HEADERS,
   });
+
+  if (response.status === 429) {
+    const retryAfterHeader = response.headers.get('retry-after');
+    const retryAfterMs = retryAfterHeader ? Number(retryAfterHeader) * 1000 : null;
+    const err = new Error('Tibia bazaar rate-limited the request (429)');
+    err.status = 429;
+    err.retryAfterMs = retryAfterMs;
+    throw err;
+  }
 
   if (!response.ok) {
     throw new Error(`Tibia bazaar request failed: ${response.status} ${response.statusText}`);
@@ -35,6 +52,20 @@ export async function fetchAuctionPage({
 
   const html = await response.text();
   return parseAuctionListHtml(html);
+}
+
+async function fetchAuctionPageWithRetry(opts, { maxRetries = 4 } = {}) {
+  let attempt = 0;
+  for (;;) {
+    try {
+      return await fetchAuctionPage(opts);
+    } catch (err) {
+      if (err.status !== 429 || attempt >= maxRetries) throw err;
+      const backoffMs = err.retryAfterMs ?? 2000 * 2 ** attempt;
+      await sleep(backoffMs);
+      attempt += 1;
+    }
+  }
 }
 
 const RESULTS_PER_PAGE = 25;
@@ -49,12 +80,12 @@ export function totalPages(totalResults) {
  * to avoid hammering tibia.com. Returns the merged auction list plus the
  * total results reported by the site.
  */
-export async function fetchAuctionPages(pageNumbers, { delayMs = 400, ...orderOpts } = {}) {
+export async function fetchAuctionPages(pageNumbers, { delayMs = 700, ...orderOpts } = {}) {
   const auctions = [];
   let totalResults = null;
 
   for (const page of pageNumbers) {
-    const result = await fetchAuctionPage({ page, ...orderOpts });
+    const result = await fetchAuctionPageWithRetry({ page, ...orderOpts });
     auctions.push(...result.auctions);
     if (result.totalResults != null) totalResults = result.totalResults;
     if (page !== pageNumbers[pageNumbers.length - 1]) {

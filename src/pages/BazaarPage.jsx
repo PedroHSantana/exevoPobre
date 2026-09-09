@@ -14,7 +14,7 @@ export default function BazaarPage() {
   const [sortBy, setSortBy] = useState('endDate');
 
   useEffect(() => {
-    const q = query(collection(db, 'auctions'), orderBy('auctionEnd'), fbLimit(1000));
+    const q = query(collection(db, 'auctions'), orderBy('auctionEndIso'), fbLimit(1000));
     const unsubscribe = onSnapshot(
       q,
       (snap) => {
@@ -34,7 +34,7 @@ export default function BazaarPage() {
     const sorted = [...list].sort((a, b) => {
       if (sortBy === 'bid') return (a.bid ?? 0) - (b.bid ?? 0);
       if (sortBy === 'level') return (b.level ?? 0) - (a.level ?? 0);
-      return new Date(a.auctionEnd) - new Date(b.auctionEnd);
+      return new Date(a.auctionEndIso ?? a.auctionEnd) - new Date(b.auctionEndIso ?? b.auctionEnd);
     });
     return sorted.slice(0, PAGE_SIZE);
   }, [auctions, filters, sortBy]);

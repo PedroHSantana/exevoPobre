@@ -247,6 +247,18 @@ input, select {
   color: var(--text);
 }
 
+.auction-countdown {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.auction-countdown-urgent {
+  color: var(--danger);
+}
+
 .auction-bid {
   display: flex;
   justify-content: space-between;

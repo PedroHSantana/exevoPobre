@@ -83,3 +83,18 @@ function matchesBidAndTime(auction, f, now) {
 export function filterAuctions(auctions, filters, opts) {
   return auctions.filter((a) => matchesFilters(a, filters, opts));
 }
+
+// Plain encodeURIComponent(JSON) — works identically in the browser and in
+// Node (server-side, when building the link a push notification opens), no
+// base64/UTF-8 edge cases to worry about.
+export function encodeCriteriaParam(criteria) {
+  return encodeURIComponent(JSON.stringify(criteria));
+}
+
+export function decodeCriteriaParam(str) {
+  try {
+    return JSON.parse(decodeURIComponent(str));
+  } catch {
+    return null;
+  }
+}

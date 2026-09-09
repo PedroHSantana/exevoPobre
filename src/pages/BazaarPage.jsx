@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { collection, onSnapshot, orderBy, query, where, limit as fbLimit } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { DEFAULT_FILTERS, filterAuctions } from '../lib/filters';
+import { DEFAULT_FILTERS, filterAuctions, decodeCriteriaParam } from '../lib/filters';
 import FilterPanel from '../components/FilterPanel';
 import AuctionCard from '../components/AuctionCard';
 import AuctionListRow from '../components/AuctionListRow';
@@ -11,7 +11,16 @@ const PAGE_SIZE = 60;
 export default function BazaarPage() {
   const [auctions, setAuctions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const initialFromAlert = useMemo(() => {
+    // Alert push notifications link back here as ?f=<encoded criteria> so
+    // clicking one shows exactly the characters that matched, not just the
+    // single auction that triggered it.
+    const raw = new URLSearchParams(window.location.search).get('f');
+    return raw ? decodeCriteriaParam(raw) : null;
+  }, []);
+  const [filters, setFilters] = useState(() =>
+    initialFromAlert ? { ...DEFAULT_FILTERS, ...initialFromAlert } : DEFAULT_FILTERS
+  );
   const [sortBy, setSortBy] = useState('endDate');
   const [view, setView] = useState('grid');
 
@@ -51,6 +60,15 @@ export default function BazaarPage() {
       <FilterPanel filters={filters} onChange={setFilters} />
 
       <main className="bazaar-results">
+        {initialFromAlert && (
+          <div className="alert-origin-banner">
+            Mostrando os leilões que bateram com o seu alerta.{' '}
+            <button type="button" onClick={() => setFilters(DEFAULT_FILTERS)}>
+              Limpar e ver tudo
+            </button>
+          </div>
+        )}
+
         <div className="results-header">
           <h1>Bazar de Personagens</h1>
           <div className="results-header-actions">

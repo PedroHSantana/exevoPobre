@@ -1,8 +1,9 @@
 import { getAdminDb, getAdminMessaging } from './firebaseAdmin.js';
-import { matchesFilters } from '../../src/lib/filters.js';
+import { matchesFilters, encodeCriteriaParam } from '../../src/lib/filters.js';
 import { sendAlertEmail } from './email.js';
 
 const MAX_NOTIFICATIONS_PER_FILTER_PER_RUN = 20;
+const SITE_URL = process.env.SITE_URL || 'https://tibia-bazaar.vercel.app';
 
 /**
  * Checks freshly scraped (or currently active) auctions against every saved
@@ -65,13 +66,18 @@ async function sendPush(messaging, filter, auction, now) {
       ? Math.max(0, Math.round((new Date(auction.auctionEndIso).getTime() - now) / 60000))
       : null;
     const timeInfo = minutesLeft != null ? ` · faltam ${minutesLeft} min` : '';
+    // Points back at OUR bazaar, pre-filtered with this alert's own
+    // criteria, so clicking the notification shows exactly the matching
+    // characters instead of just the one auction that triggered it.
+    const link = `${SITE_URL}/?f=${encodeCriteriaParam(filter.criteria || {})}`;
     await messaging.send({
       token: filter.pushToken,
       notification: {
         title: `${auction.name} bate com "${filter.name || 'seu filtro'}"`,
         body: `Level ${auction.level} ${auction.vocation} em ${auction.world} — bid ${auction.bid} TC${timeInfo}`,
       },
-      webpush: { fcmOptions: { link: auction.officialUrl } },
+      data: { link },
+      webpush: { fcmOptions: { link } },
     });
   } catch (err) {
     console.error(`Push falhou para leilão ${auction.auctionId}:`, err.message);

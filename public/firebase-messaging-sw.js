@@ -21,5 +21,15 @@ messaging.onBackgroundMessage((payload) => {
   self.registration.showNotification(title || 'Tibia Bazaar Finder', {
     body,
     icon: '/favicon.svg',
+    data: { link: payload.data?.link || null },
   });
+});
+
+// Overriding onBackgroundMessage above replaces Firebase's own click
+// handling, so we open the filtered bazaar link ourselves.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const link = event.notification.data?.link;
+  if (!link) return;
+  event.waitUntil(clients.openWindow(link));
 });

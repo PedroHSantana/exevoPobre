@@ -26,12 +26,17 @@ export const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 // tab is focused, `onMessage` fires instead but nothing is displayed
 // unless we do it ourselves — without this, a push sent while the user is
 // looking at the site does nothing visible at all.
-export async function listenForForegroundMessages() {
+export async function listenForForegroundMessages(onPayload) {
   if (Notification.permission !== 'granted') return;
   const messaging = await getMessagingIfSupported();
   if (!messaging) return;
   onMessage(messaging, (payload) => {
     const { title, body } = payload.notification || {};
-    if (title) new Notification(title, { body, icon: '/favicon.svg' });
+    const link = payload.data?.link || null;
+    if (title) {
+      const notification = new Notification(title, { body, icon: '/favicon.svg' });
+      if (link) notification.onclick = () => window.location.assign(link);
+    }
+    onPayload?.({ title, body, link });
   });
 }

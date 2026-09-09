@@ -1,17 +1,14 @@
-import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import BazaarPage from './pages/BazaarPage';
 import AlertsPage from './pages/AlertsPage';
-import { listenForForegroundMessages } from './lib/firebase';
+import PushAlertBanner from './components/PushAlertBanner';
 
 export default function App() {
-  useEffect(() => {
-    listenForForegroundMessages();
-  }, []);
-
   return (
     <BrowserRouter>
       <div className="app-shell">
+        <PushAlertBanner />
+
         <header className="app-header">
           <span className="app-title">Tibia Bazaar Finder</span>
           <nav>

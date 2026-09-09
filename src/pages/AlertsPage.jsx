@@ -84,7 +84,13 @@ export default function AlertsPage() {
     });
 
     if (res.ok) {
-      setStatus('Filtro salvo! Você será avisado quando surgir um leilão compatível.');
+      if (pushEnabled && !pushToken) {
+        setStatus(
+          'Filtro salvo, mas a notificação push NÃO foi ativada (falhou ao gerar o token — veja o aviso acima). Você só vai receber por e-mail, se preencheu um.'
+        );
+      } else {
+        setStatus('Filtro salvo! Você será avisado quando surgir um leilão compatível.');
+      }
       setName('');
       loadFilters();
     } else {

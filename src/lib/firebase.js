@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getMessaging, isSupported } from 'firebase/messaging';
+import { getMessaging, isSupported, onMessage } from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,3 +20,18 @@ export async function getMessagingIfSupported() {
 }
 
 export const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
+
+// Firebase only auto-shows a system notification for pushes that arrive
+// while the tab is in the background (via the service worker). When the
+// tab is focused, `onMessage` fires instead but nothing is displayed
+// unless we do it ourselves — without this, a push sent while the user is
+// looking at the site does nothing visible at all.
+export async function listenForForegroundMessages() {
+  if (Notification.permission !== 'granted') return;
+  const messaging = await getMessagingIfSupported();
+  if (!messaging) return;
+  onMessage(messaging, (payload) => {
+    const { title, body } = payload.notification || {};
+    if (title) new Notification(title, { body, icon: '/favicon.svg' });
+  });
+}

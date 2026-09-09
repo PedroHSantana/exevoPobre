@@ -5,6 +5,11 @@
 // By always both showing the notification AND postMessage-ing every open
 // tab (focused or not), the page's own beep/banner logic (see
 // PushAlertBanner.jsx) can react consistently regardless of focus state.
+// Take over immediately on install/activate instead of waiting for every
+// tab using the previous service worker to close first.
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+
 self.addEventListener('push', (event) => {
   let payload = {};
   try {

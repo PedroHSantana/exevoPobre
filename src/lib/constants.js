@@ -1,15 +1,14 @@
-export const VOCATIONS = [
-  'None',
-  'Druid',
-  'Elder Druid',
-  'Knight',
-  'Elite Knight',
-  'Paladin',
-  'Royal Paladin',
-  'Sorcerer',
-  'Master Sorcerer',
-  'Monk',
-  'Exalted Monk',
+// Grouped by vocation family (base + promoted) so filtering by "Knight"
+// matches both "Knight" and "Elite Knight" characters, same as most players
+// mean when they say "quero um knight" — promotion status is a separate
+// concern, not a different class.
+export const VOCATION_FAMILIES = [
+  { label: 'None', vocations: ['None'] },
+  { label: 'Druid', vocations: ['Druid', 'Elder Druid'] },
+  { label: 'Knight', vocations: ['Knight', 'Elite Knight'] },
+  { label: 'Paladin', vocations: ['Paladin', 'Royal Paladin'] },
+  { label: 'Sorcerer', vocations: ['Sorcerer', 'Master Sorcerer'] },
+  { label: 'Monk', vocations: ['Monk', 'Exalted Monk'] },
 ];
 
 export const SKILLS = [

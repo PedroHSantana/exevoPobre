@@ -1,5 +1,5 @@
 import { DEFAULT_FILTERS } from '../lib/filters';
-import { VOCATIONS, SKILLS, WORLDS } from '../lib/constants';
+import { VOCATION_FAMILIES, SKILLS, WORLDS } from '../lib/constants';
 
 function toggleValue(list, value) {
   return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
@@ -51,14 +51,14 @@ export default function FilterPanel({ filters, onChange }) {
       <div className="filter-group">
         <label>Vocação</label>
         <div className="chip-list">
-          {VOCATIONS.map((v) => (
+          {VOCATION_FAMILIES.map(({ label }) => (
             <button
-              key={v}
+              key={label}
               type="button"
-              className={`chip ${filters.vocations.includes(v) ? 'chip-active' : ''}`}
-              onClick={() => set({ vocations: toggleValue(filters.vocations, v) })}
+              className={`chip ${filters.vocations.includes(label) ? 'chip-active' : ''}`}
+              onClick={() => set({ vocations: toggleValue(filters.vocations, label) })}
             >
-              {v}
+              {label}
             </button>
           ))}
         </div>

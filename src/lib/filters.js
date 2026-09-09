@@ -1,7 +1,9 @@
+import { VOCATION_FAMILIES } from './constants';
+
 export const DEFAULT_FILTERS = {
   levelMin: null,
   levelMax: null,
-  vocations: [], // e.g. ['Knight', 'Elite Knight']
+  vocations: [], // family labels, e.g. ['Knight'] — matches Knight + Elite Knight
   worlds: [],
   pvpTypes: [], // matched against world metadata if available; otherwise ignored
   bidMax: null,
@@ -19,7 +21,12 @@ export function matchesFilters(auction, filters) {
   if (f.levelMin != null && (auction.level ?? 0) < f.levelMin) return false;
   if (f.levelMax != null && (auction.level ?? Infinity) > f.levelMax) return false;
 
-  if (f.vocations.length > 0 && !f.vocations.includes(auction.vocation)) return false;
+  if (f.vocations.length > 0) {
+    const allowedVocations = VOCATION_FAMILIES.filter((fam) => f.vocations.includes(fam.label)).flatMap(
+      (fam) => fam.vocations
+    );
+    if (!allowedVocations.includes(auction.vocation)) return false;
+  }
   if (f.worlds.length > 0 && !f.worlds.includes(auction.world)) return false;
 
   if (f.bidMax != null && (auction.bid ?? Infinity) > f.bidMax) return false;

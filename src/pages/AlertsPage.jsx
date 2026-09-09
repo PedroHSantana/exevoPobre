@@ -39,26 +39,27 @@ export default function AlertsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Returns { token } on success or { error } on failure — never throws,
+  // so the caller always has a concrete reason to show instead of it being
+  // silently swallowed or overwritten by a later status update.
   const enablePush = async () => {
     try {
       const messaging = await getMessagingIfSupported();
       if (!messaging) {
-        setStatus('Notificações push não são suportadas neste navegador.');
-        return null;
+        return { error: 'Notificações push não são suportadas neste navegador.' };
       }
       const permission = await Notification.requestPermission();
       if (permission !== 'granted') {
-        setStatus('Permissão de notificação negada.');
-        return null;
+        return { error: 'Permissão de notificação negada.' };
       }
       const registration = await registerPushServiceWorker();
       const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+      if (!token) return { error: 'getToken() retornou vazio.' };
       setPushEnabled(true);
-      return token;
+      return { token };
     } catch (err) {
       console.error(err);
-      setStatus('Falha ao ativar notificações push.');
-      return null;
+      return { error: `${err.name}: ${err.message}` };
     }
   };
 
@@ -67,8 +68,11 @@ export default function AlertsPage() {
     setStatus(null);
 
     let pushToken = null;
+    let pushError = null;
     if (pushEnabled) {
-      pushToken = await enablePush();
+      const result = await enablePush();
+      pushToken = result.token ?? null;
+      pushError = result.error ?? null;
     }
 
     const res = await fetch('/api/alerts', {
@@ -86,7 +90,7 @@ export default function AlertsPage() {
     if (res.ok) {
       if (pushEnabled && !pushToken) {
         setStatus(
-          'Filtro salvo, mas a notificação push NÃO foi ativada (falhou ao gerar o token — veja o aviso acima). Você só vai receber por e-mail, se preencheu um.'
+          `Filtro salvo, mas a notificação push NÃO foi ativada (${pushError}). Você só vai receber por e-mail, se preencheu um.`
         );
       } else {
         setStatus('Filtro salvo! Você será avisado quando surgir um leilão compatível.');

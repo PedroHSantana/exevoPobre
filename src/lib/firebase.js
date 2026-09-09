@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
-import { getMessaging, isSupported, onMessage } from 'firebase/messaging';
+import { getMessaging, isSupported } from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -21,22 +21,16 @@ export async function getMessagingIfSupported() {
 
 export const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 
-// Firebase only auto-shows a system notification for pushes that arrive
-// while the tab is in the background (via the service worker). When the
-// tab is focused, `onMessage` fires instead but nothing is displayed
-// unless we do it ourselves — without this, a push sent while the user is
-// looking at the site does nothing visible at all.
-export async function listenForForegroundMessages(onPayload) {
-  if (Notification.permission !== 'granted') return;
-  const messaging = await getMessagingIfSupported();
-  if (!messaging) return;
-  onMessage(messaging, (payload) => {
-    const { title, body } = payload.notification || {};
-    const link = payload.data?.link || null;
-    if (title) {
-      const notification = new Notification(title, { body, icon: '/favicon.svg' });
-      if (link) notification.onclick = () => window.location.assign(link);
-    }
-    onPayload?.({ title, body, link });
+// Firebase's own onMessage() only fires when the tab is focused — an open
+// but unfocused tab gets nothing from it (Firebase silently hands off to
+// the service worker instead, which can show a plain OS toast but can't
+// play audio). Our service worker (see public/firebase-messaging-sw.js)
+// postMessages every open tab on every push, focused or not, so this is
+// the one listener that reliably covers all "tab is open somewhere" cases.
+export function listenForServiceWorkerPushMessages(onPayload) {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data?.type !== 'PUSH_RECEIVED') return;
+    onPayload?.({ title: event.data.title, body: event.data.body, link: event.data.link });
   });
 }

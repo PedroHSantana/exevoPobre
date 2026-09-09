@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { listenForForegroundMessages } from '../lib/firebase';
+import { listenForServiceWorkerPushMessages } from '../lib/firebase';
 
 function beep() {
   try {
@@ -29,7 +29,7 @@ export default function PushAlertBanner() {
   const beepIntervalRef = useRef(null);
 
   useEffect(() => {
-    listenForForegroundMessages((payload) => {
+    listenForServiceWorkerPushMessages((payload) => {
       setAlert(payload);
       beep();
       clearInterval(beepIntervalRef.current);

@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Deploy with: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Auction data is public info scraped from tibia.com — safe to read
+    // directly from the client. Only the server (Admin SDK, via /api/cron)
+    // may write it.
+    match /auctions/{auctionId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Saved filters carry push tokens and e-mails — never exposed to
+    // clients directly. All access goes through /api/alerts (Admin SDK,
+    // which bypasses these rules).
+    match /savedFilters/{filterId} {
+      allow read, write: if false;
+
+      match /notifiedAuctions/{auctionId} {
+        allow read, write: if false;
+      }
+    }
+
+    match /scrapeState/{docId} {
+      allow read, write: if false;
+    }
+  }
+}

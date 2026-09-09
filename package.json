@@ -1,0 +1,31 @@
+{
+  "name": "tibia-bazaar",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "scrape:local": "node scripts/scrapeLocal.js",
+    "seed:firestore": "node --env-file=.env scripts/seedFirestore.js"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "react-router-dom": "^7.18.3",
+    "resend": "^6.26.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vercel/node": "^12.0.1",
+    "@vitejs/plugin-react": "^6.1.0",
+    "oxlint": "^1.79.0",
+    "vite": "^8.2.2"
+  }
+}

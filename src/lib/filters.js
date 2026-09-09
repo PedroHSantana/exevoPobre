@@ -1,4 +1,4 @@
-import { VOCATION_FAMILIES } from './constants';
+import { VOCATION_FAMILIES } from './constants.js';
 
 export const DEFAULT_FILTERS = {
   levelMin: null,

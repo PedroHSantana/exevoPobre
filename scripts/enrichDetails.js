@@ -17,9 +17,13 @@ const limit = limitArg ? parseInt(limitArg.split('=')[1], 10) : 300;
 const db = getAdminDb();
 
 // Firestore can't query for "field is missing", so we pull just the
-// enrichment marker for every doc and filter client-side, then limit.
-const allSnap = await db.collection('auctions').select('detailEnrichedAt').get();
-const pending = allSnap.docs.filter((doc) => !doc.get('detailEnrichedAt')).slice(0, limit);
+// enrichment marker for every doc and filter client-side. Prioritize
+// auctions ending soonest — that's what a bargain hunter actually looks at.
+const allSnap = await db.collection('auctions').select('detailEnrichedAt', 'auctionEndIso').get();
+const pending = allSnap.docs
+  .filter((doc) => !doc.get('detailEnrichedAt'))
+  .sort((a, b) => (a.get('auctionEndIso') || '').localeCompare(b.get('auctionEndIso') || ''))
+  .slice(0, limit);
 console.log(`Encontrados ${pending.length} leilões sem detalhe (de ${allSnap.size} total, limite ${limit}).`);
 
 let done = 0;

@@ -1,4 +1,4 @@
-import { parseAuctionListHtml } from './tibiaParser.js';
+import { parseAuctionListHtml, parseAuctionDetailHtml } from './tibiaParser.js';
 
 const BASE_URL = 'https://www.tibia.com/charactertrade/';
 // tibia.com's WAF returns 403 to non-browser-looking requests (a custom
@@ -22,20 +22,8 @@ export function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function fetchAuctionPage({
-  page = 1,
-  orderColumn = ORDER_COLUMN.END_DATE,
-  orderDirection = 1,
-} = {}) {
-  const url = new URL(BASE_URL);
-  url.searchParams.set('subtopic', 'currentcharactertrades');
-  url.searchParams.set('currentpage', String(page));
-  url.searchParams.set('order_column', String(orderColumn));
-  url.searchParams.set('order_direction', String(orderDirection));
-
-  const response = await fetch(url.toString(), {
-    headers: REQUEST_HEADERS,
-  });
+async function fetchHtml(url) {
+  const response = await fetch(url, { headers: REQUEST_HEADERS });
 
   if (response.status === 429) {
     const retryAfterHeader = response.headers.get('retry-after');
@@ -50,15 +38,14 @@ export async function fetchAuctionPage({
     throw new Error(`Tibia bazaar request failed: ${response.status} ${response.statusText}`);
   }
 
-  const html = await response.text();
-  return parseAuctionListHtml(html);
+  return response.text();
 }
 
-async function fetchAuctionPageWithRetry(opts, { maxRetries = 4 } = {}) {
+async function fetchHtmlWithRetry(url, { maxRetries = 4 } = {}) {
   let attempt = 0;
   for (;;) {
     try {
-      return await fetchAuctionPage(opts);
+      return await fetchHtml(url);
     } catch (err) {
       if (err.status !== 429 || attempt >= maxRetries) throw err;
       const backoffMs = err.retryAfterMs ?? 2000 * 2 ** attempt;
@@ -66,6 +53,31 @@ async function fetchAuctionPageWithRetry(opts, { maxRetries = 4 } = {}) {
       attempt += 1;
     }
   }
+}
+
+export async function fetchAuctionPage({
+  page = 1,
+  orderColumn = ORDER_COLUMN.END_DATE,
+  orderDirection = 1,
+} = {}) {
+  const url = new URL(BASE_URL);
+  url.searchParams.set('subtopic', 'currentcharactertrades');
+  url.searchParams.set('currentpage', String(page));
+  url.searchParams.set('order_column', String(orderColumn));
+  url.searchParams.set('order_direction', String(orderDirection));
+
+  const html = await fetchHtmlWithRetry(url.toString());
+  return parseAuctionListHtml(html);
+}
+
+export async function fetchAuctionDetail(auctionId) {
+  const url = new URL(BASE_URL);
+  url.searchParams.set('subtopic', 'currentcharactertrades');
+  url.searchParams.set('page', 'details');
+  url.searchParams.set('auctionid', String(auctionId));
+
+  const html = await fetchHtmlWithRetry(url.toString());
+  return parseAuctionDetailHtml(html);
 }
 
 const RESULTS_PER_PAGE = 25;
@@ -85,7 +97,7 @@ export async function fetchAuctionPages(pageNumbers, { delayMs = 700, ...orderOp
   let totalResults = null;
 
   for (const page of pageNumbers) {
-    const result = await fetchAuctionPageWithRetry({ page, ...orderOpts });
+    const result = await fetchAuctionPage({ page, ...orderOpts });
     auctions.push(...result.auctions);
     if (result.totalResults != null) totalResults = result.totalResults;
     if (page !== pageNumbers[pageNumbers.length - 1]) {

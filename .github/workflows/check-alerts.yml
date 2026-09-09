@@ -1,0 +1,19 @@
+name: Check saved auction alerts
+
+on:
+  schedule:
+    # Every 5 minutes. This endpoint only reads Firestore (no tibia.com
+    # calls), so it isn't affected by the cloud-IP block that stops the
+    # scraper from running here — safe to run this often.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  check-alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/check-alerts
+        run: |
+          curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://tibia-bazaar.vercel.app/api/cron/check-alerts"

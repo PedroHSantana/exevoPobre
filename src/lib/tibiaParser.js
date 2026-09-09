@@ -284,6 +284,89 @@ function parseAuctionCard($, el) {
   };
 }
 
+function findDetailsBlock($, label) {
+  return $('.CharacterDetailsBlock')
+    .filter((i, el) => $(el).find('.Text').first().text().trim() === label)
+    .first();
+}
+
+function parseLeafRows($, block, { maxCols = 1 } = {}) {
+  // Tibia's markup nests the same table 2-3 times for its box-border
+  // styling, so the same row text appears duplicated at multiple depths.
+  // The innermost (leaf) <tr>s are the ones with no further nested table,
+  // which is what we want to read once each.
+  const rows = [];
+  block.find('table tr').each((i, tr) => {
+    const $tr = $(tr);
+    if ($tr.find('table').length > 0) return; // not a leaf row
+    const tds = $tr
+      .find('td')
+      .map((j, td) => $(td).text().trim())
+      .get();
+    if (tds.length > 0 && tds.length <= maxCols) rows.push(tds);
+  });
+  return rows;
+}
+
+const DETAIL_SKILL_NAMES = SKILL_NAMES;
+
+/**
+ * Parses an individual auction's detail page (?page=details&auctionid=N),
+ * which — unlike the overview list — exposes every skill (not just the
+ * "noteworthy" ones) plus quest lines, mounts/outfits counts and blessings.
+ * Used to enrich an auction already found via parseAuctionListHtml.
+ */
+export function parseAuctionDetailHtml(html) {
+  const $ = cheerio.load(html);
+
+  const fullSkills = {};
+  const generalBlock = findDetailsBlock($, 'General');
+  generalBlock.find('table tr').each((i, tr) => {
+    const $tr = $(tr);
+    if ($tr.find('table').length > 0) return;
+    const tds = $tr
+      .find('td')
+      .map((j, td) => $(td).text().trim())
+      .get();
+    if (tds.length >= 2 && DETAIL_SKILL_NAMES.includes(tds[0])) {
+      fullSkills[tds[0]] = parseNumber(tds[1]);
+    }
+  });
+
+  const singleStat = (label) => {
+    const row = parseLeafRows($, generalBlock, { maxCols: 1 }).find((r) =>
+      r[0].startsWith(`${label}:`)
+    );
+    return row ? row[0].slice(label.length + 1).trim() : null;
+  };
+
+  const mountsCount = parseNumber(singleStat('Mounts'));
+  const outfitsCount = parseNumber(singleStat('Outfits'));
+  const titlesCount = parseNumber(singleStat('Titles'));
+  const blessingsRaw = singleStat('Blessings'); // e.g. "7/7"
+  const blessingsMatch = blessingsRaw ? blessingsRaw.match(/(\d+)\/(\d+)/) : null;
+
+  const questLinesBlock = findDetailsBlock($, 'Completed Quest Lines');
+  const completedQuestLines = parseLeafRows($, questLinesBlock, { maxCols: 1 })
+    .map((r) => r[0])
+    .filter((name) => name && name !== 'Quest Line Name');
+
+  const hasSoulWar = completedQuestLines.some((q) => /soul war/i.test(q));
+  const hasPrimalOrdeal = completedQuestLines.some((q) => /primal ordeal/i.test(q));
+
+  return {
+    fullSkills,
+    mountsCount,
+    outfitsCount,
+    titlesCount,
+    blessingsActive: blessingsMatch ? parseNumber(blessingsMatch[1]) : null,
+    blessingsTotal: blessingsMatch ? parseNumber(blessingsMatch[2]) : null,
+    completedQuestLines,
+    hasSoulWar,
+    hasPrimalOrdeal,
+  };
+}
+
 export function parseAuctionListHtml(html) {
   const $ = cheerio.load(html);
   const auctions = $('.Auction')

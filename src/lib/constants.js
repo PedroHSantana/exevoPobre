@@ -22,6 +22,31 @@ export const SKILLS = [
   'Fishing',
 ];
 
+export const SKILL_SHORT = {
+  'Magic Level': 'Magic',
+  'Axe Fighting': 'Axe',
+  'Club Fighting': 'Club',
+  'Sword Fighting': 'Sword',
+  'Distance Fighting': 'Distance',
+  'Fist Fighting': 'Fist',
+  Shielding: 'Shielding',
+  Fishing: 'Fishing',
+};
+
+export const VOCATION_ICON = {
+  None: '❔',
+  Druid: '🌿',
+  'Elder Druid': '🌿',
+  Knight: '⚔️',
+  'Elite Knight': '⚔️',
+  Paladin: '🏹',
+  'Royal Paladin': '🏹',
+  Sorcerer: '🔮',
+  'Master Sorcerer': '🔮',
+  Monk: '👊',
+  'Exalted Monk': '👊',
+};
+
 export const WORLDS = [
   'Aethera', 'Antica', 'Astera', 'Belobra', 'Blumera', 'Bona', 'Bravoria', 'Calmera',
   'Cantabra', 'Celebra', 'Celesta', 'Citra', 'Collabra', 'Descubra', 'Dia', 'Dracobra',

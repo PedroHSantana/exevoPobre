@@ -1,4 +1,5 @@
 import AuctionCountdown from './AuctionCountdown';
+import { SKILL_SHORT, VOCATION_ICON } from '../lib/constants';
 
 function formatNumber(n) {
   if (n == null) return '—';
@@ -6,20 +7,43 @@ function formatNumber(n) {
 }
 
 export default function AuctionCard({ auction }) {
-  const skillEntries = Object.entries(auction.skills || {}).sort((a, b) => b[1] - a[1]);
+  const skillSource = auction.fullSkills && Object.keys(auction.fullSkills).length > 0
+    ? auction.fullSkills
+    : auction.skills || {};
+  const skillEntries = Object.entries(skillSource).sort((a, b) => b[1] - a[1]);
+
+  const badges = [];
+  if (auction.isNew) badges.push({ key: 'new', label: 'Novo', tone: 'new' });
+  if (auction.hasSoulWar) badges.push({ key: 'soulwar', label: 'Soul War 💀', tone: 'rare' });
+  if (auction.hasPrimalOrdeal) badges.push({ key: 'primal', label: 'Primal Ordeal 🦖', tone: 'rare' });
 
   return (
     <article className="auction-card">
       <header className="auction-card-header">
-        {auction.outfitImageUrl && <img src={auction.outfitImageUrl} alt={auction.name} />}
-        <div>
+        {auction.outfitImageUrl && (
+          <div className="auction-outfit-frame">
+            <img src={auction.outfitImageUrl} alt={auction.name} />
+          </div>
+        )}
+        <div className="auction-header-info">
           <h3>{auction.name}</h3>
           <p className="auction-meta">
+            <span className="vocation-icon">{VOCATION_ICON[auction.vocation] ?? ''}</span>
             Level {formatNumber(auction.level)} · {auction.vocation} · {auction.world}
           </p>
           <AuctionCountdown endIso={auction.auctionEndIso} />
         </div>
       </header>
+
+      {badges.length > 0 && (
+        <div className="badge-row">
+          {badges.map((b) => (
+            <span key={b.key} className={`badge badge-${b.tone}`}>
+              {b.label}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="auction-card-body">
         <div className="auction-bid">
@@ -28,22 +52,38 @@ export default function AuctionCard({ auction }) {
         </div>
 
         {skillEntries.length > 0 && (
-          <ul className="skill-list">
-            {skillEntries.slice(0, 4).map(([skill, value]) => (
-              <li key={skill}>
-                {value} {skill}
-              </li>
+          <div className="skill-grid">
+            {skillEntries.map(([skill, value]) => (
+              <div className="skill-cell" key={skill}>
+                <span className="skill-value">{value}</span>
+                <span className="skill-name">{SKILL_SHORT[skill] ?? skill}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
 
-        <ul className="stat-list">
-          {auction.charmPoints != null && <li>Charm Points: {formatNumber(auction.charmPoints)}</li>}
-          {auction.imbuements != null && <li>Imbuements: {auction.imbuements}/23</li>}
-          {auction.questsCompleted != null && <li>Quests: {auction.questsCompleted}/42</li>}
-          {auction.bossPoints != null && <li>Boss Points: {formatNumber(auction.bossPoints)}</li>}
-          {auction.achievementPoints != null && <li>Achievement Points: {auction.achievementPoints}</li>}
-        </ul>
+        <div className="stat-chip-row">
+          {auction.charmPoints != null && (
+            <span className="stat-chip">Charms {formatNumber(auction.charmPoints)}</span>
+          )}
+          {auction.imbuements != null && <span className="stat-chip">Imbue {auction.imbuements}/23</span>}
+          {auction.questsCompleted != null && (
+            <span className="stat-chip">Quests {auction.questsCompleted}/42</span>
+          )}
+          {auction.bossPoints != null && (
+            <span className="stat-chip">Boss {formatNumber(auction.bossPoints)}</span>
+          )}
+          {auction.achievementPoints != null && (
+            <span className="stat-chip">Achiev. {auction.achievementPoints}</span>
+          )}
+          {auction.mountsCount != null && <span className="stat-chip">Mounts {auction.mountsCount}</span>}
+          {auction.outfitsCount != null && <span className="stat-chip">Outfits {auction.outfitsCount}</span>}
+          {auction.blessingsActive != null && (
+            <span className="stat-chip">
+              Bless {auction.blessingsActive}/{auction.blessingsTotal}
+            </span>
+          )}
+        </div>
       </div>
 
       <footer className="auction-card-footer">

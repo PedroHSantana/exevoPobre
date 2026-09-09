@@ -6,6 +6,20 @@ import { getOwnerId } from '../lib/ownerId';
 import { DEFAULT_FILTERS } from '../lib/filters';
 import FilterPanel from '../components/FilterPanel';
 
+function summarizeCriteria(c) {
+  const parts = [];
+  if (c.characterName) parts.push(`personagem "${c.characterName}"`);
+  if (c.levelMin != null || c.levelMax != null) parts.push(`nível ${c.levelMin ?? 0}-${c.levelMax ?? '∞'}`);
+  if (c.vocations?.length) parts.push(c.vocations.join('/'));
+  if (Object.keys(c.skillMins || {}).length) {
+    const mode = c.skillMinsMode === 'any' ? ' OU ' : ' E ';
+    parts.push(Object.entries(c.skillMins).map(([s, v]) => `${s}≥${v}`).join(mode));
+  }
+  if (c.bidMax != null) parts.push(`bid ≤ ${c.bidMax.toLocaleString('pt-BR')}`);
+  if (c.endingWithinMinutes != null) parts.push(`termina em ≤${c.endingWithinMinutes}min`);
+  return parts.length ? parts.join(' · ') : 'qualquer leilão';
+}
+
 export default function AlertsPage() {
   const [ownerId] = useState(getOwnerId);
   const [savedFilters, setSavedFilters] = useState([]);
@@ -88,9 +102,21 @@ export default function AlertsPage() {
       <section>
         <h1>Alertas de Leilão</h1>
         <p>
-          Salve um filtro e receba um aviso (push e/ou e-mail) assim que surgir um leilão novo que bate com
-          os critérios — sem precisar ficar atualizando a página.
+          Salve um filtro e receba um aviso (push e/ou e-mail) sempre que um leilão bater com os critérios —
+          seja um leilão novo, seja um já existente cujo tempo restante ou preço mudou. Dois jeitos comuns de
+          usar:
         </p>
+        <ul style={{ fontSize: 13, paddingLeft: 18, margin: '0 0 12px' }}>
+          <li>
+            <strong>Personagem específico:</strong> preencha só o campo "Nome do personagem" e um "Bid máximo"
+            — avisa quando o bid daquele personagem ficar abaixo do valor.
+          </li>
+          <li>
+            <strong>Garimpo por critérios:</strong> combine nível, vocação, skills (com "OU" pra pegar sword
+            OU axe, por exemplo), bid máximo e "Terminando em até" pra pegar leilões baratos que estão prestes
+            a fechar sem ninguém ter notado.
+          </li>
+        </ul>
 
         <form onSubmit={saveFilter} className="alert-form">
           <label>
@@ -124,7 +150,10 @@ export default function AlertsPage() {
         <ul>
           {savedFilters.map((f) => (
             <li key={f.id}>
-              <span>{f.name}</span>
+              <div>
+                <div style={{ fontWeight: 600 }}>{f.name}</div>
+                <div style={{ fontSize: 11, opacity: 0.75 }}>{summarizeCriteria(f.criteria || {})}</div>
+              </div>
               <button type="button" onClick={() => removeFilter(f.id)}>
                 Remover
               </button>

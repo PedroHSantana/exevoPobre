@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "scrape:local": "node scripts/scrapeLocal.js",
-    "seed:firestore": "node --env-file=.env scripts/seedFirestore.js"
+    "seed:firestore": "node --env-file=.env scripts/seedFirestore.js",
+    "enrich:details": "node --env-file=.env scripts/enrichDetails.js"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

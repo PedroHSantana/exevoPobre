@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { DEFAULT_FILTERS } from '../lib/filters';
 import { VOCATION_FAMILIES, SKILLS, WORLDS } from '../lib/constants';
 
@@ -6,6 +7,7 @@ function toggleValue(list, value) {
 }
 
 export default function FilterPanel({ filters, onChange }) {
+  const [timeUnit, setTimeUnit] = useState('hours');
   const set = (patch) => onChange({ ...filters, ...patch });
 
   const setSkillMin = (skill, value) => {
@@ -15,9 +17,35 @@ export default function FilterPanel({ filters, onChange }) {
     set({ skillMins: next });
   };
 
+  const timeValue =
+    filters.endingWithinMinutes == null
+      ? ''
+      : timeUnit === 'hours'
+        ? Math.round((filters.endingWithinMinutes / 60) * 10) / 10
+        : filters.endingWithinMinutes;
+
+  const setTimeValue = (raw, unit = timeUnit) => {
+    if (raw === '' || raw == null) {
+      set({ endingWithinMinutes: null });
+      return;
+    }
+    const minutes = unit === 'hours' ? Number(raw) * 60 : Number(raw);
+    set({ endingWithinMinutes: Math.round(minutes) });
+  };
+
   return (
     <div className="filter-panel">
       <h2>Filtros</h2>
+
+      <div className="filter-group">
+        <label>Nome do personagem</label>
+        <input
+          type="text"
+          placeholder="ex: Fulano de Tal"
+          value={filters.characterName ?? ''}
+          onChange={(e) => set({ characterName: e.target.value || null })}
+        />
+      </div>
 
       <div className="filter-group">
         <label>Nível</label>
@@ -46,6 +74,24 @@ export default function FilterPanel({ filters, onChange }) {
           value={filters.bidMax ?? ''}
           onChange={(e) => set({ bidMax: e.target.value ? Number(e.target.value) : null })}
         />
+      </div>
+
+      <div className="filter-group">
+        <label>Terminando em até</label>
+        <div className="filter-row">
+          <input
+            type="number"
+            step="0.5"
+            min="0"
+            placeholder="ex: 2"
+            value={timeValue}
+            onChange={(e) => setTimeValue(e.target.value)}
+          />
+          <select value={timeUnit} onChange={(e) => setTimeUnit(e.target.value)}>
+            <option value="minutes">minutos</option>
+            <option value="hours">horas</option>
+          </select>
+        </div>
       </div>
 
       <div className="filter-group">
@@ -81,6 +127,22 @@ export default function FilterPanel({ filters, onChange }) {
 
       <div className="filter-group">
         <label>Skills mínimas</label>
+        <div className="chip-list" style={{ marginBottom: 8 }}>
+          <button
+            type="button"
+            className={`chip ${filters.skillMinsMode === 'all' ? 'chip-active' : ''}`}
+            onClick={() => set({ skillMinsMode: 'all' })}
+          >
+            E (todas)
+          </button>
+          <button
+            type="button"
+            className={`chip ${filters.skillMinsMode === 'any' ? 'chip-active' : ''}`}
+            onClick={() => set({ skillMinsMode: 'any' })}
+          >
+            OU (qualquer uma)
+          </button>
+        </div>
         {SKILLS.map((skill) => (
           <div className="filter-row" key={skill}>
             <span className="skill-label">{skill}</span>

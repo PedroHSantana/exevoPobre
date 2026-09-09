@@ -1,0 +1,11 @@
+name: Test IP against tibia.com
+on: { workflow_dispatch: {} }
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Curl tibia.com bazaar
+        run: |
+          curl -s -o /dev/null -w "HTTP_STATUS:%{http_code}\n" \
+            -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36" \
+            "https://www.tibia.com/charactertrade/?subtopic=currentcharactertrades"
